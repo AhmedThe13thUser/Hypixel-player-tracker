@@ -1,4 +1,4 @@
-"# Hypixel-player-tracker"
+# Hypixel-player-tracker
 
 # ONLY COMPATIBLE WITH WINDOWS 11
 
