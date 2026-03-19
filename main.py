@@ -34,7 +34,7 @@ def clear():
 
 
 # Create tray icon
-image = Image.new("RGB", (64, 64), "black")  # Simple placeholder image
+image = Image.new("RGB", (64, 64), "yellow")  # Simple placeholder image
 
 icon = pystray.Icon("Console Control", image, "Console Tray Control")
 
@@ -52,7 +52,11 @@ while True:
     card_box = soup.find_all("div", class_=["card-box", "m-b-10"])
     match = re.search(r'Last Login: .*E[S|D]T', card_box[0].text, re.IGNORECASE)
     print(f"Last update: {dt}")
-    status = card_box[-1].text
+    status = ""
+    if "status" in card_box[-1].text.lower():
+        status = card_box[-1].text
+    else:
+        status = card_box[-2].text
     print(status, match.group(0).strip())
     if "offline" not in status.lower():
         if notFirstCheck:
