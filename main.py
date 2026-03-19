@@ -40,20 +40,30 @@ icon = pystray.Icon("Console Control", image, "Console Tray Control")
 
 # Run the icon (non-blocking)
 icon.run_detached()
+notFirstCheck = False
 
 while True:
+    if notFirstCheck:
+        time.sleep(60)
     request = s.get(f"https://plancke.io/hypixel/player/stats/{player}")
     html = request.text
     soup = BeautifulSoup(html, "html.parser")
     # get text inside class class="card-box m-b-10"
     card_box = soup.find_all("div", class_=["card-box", "m-b-10"])
-    match = re.search(r'Last Login: .*EST', card_box[0].text, re.IGNORECASE)
+    match = re.search(r'Last Login: .*E[S|D]T', card_box[0].text, re.IGNORECASE)
     print(f"Last update: {dt}")
     status = card_box[-1].text
     print(status, match.group(0).strip())
     if "offline" not in status.lower():
-        notify("Hypixel Status", f"{player} is ONLINE!",audio='ms-winsoundevent:Notification.Looping.Alarm')
-        icon.icon = Image.new("RGB", (64, 64), "red")  # Change icon to red when offline
+        if notFirstCheck:
+            notify("Hypixel Status", f"{player} is ONLINE!",audio='ms-winsoundevent:Notification.Looping.Alarm')
+            icon.icon = Image.new("RGB", (64, 64), "red")  # Change icon to red when online
+            notFirstCheck = False
+        else:
+            notFirstCheck = True
+            continue
+    else:
+        icon.icon = Image.new("RGB", (64, 64), "black")  # Change icon to black when offline
     icon.title = f"{player} - {status.strip()} \n Last update: {dt} \n last login: {match.group(0).strip()}"
     time.sleep(60*10)
     dt = clear()
